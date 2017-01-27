@@ -123,7 +123,20 @@ function portNumbers(request_body) {
 
 }
 
-function checkHeaders(signature) {
+function checkHeaders(headers) {
+`
+{ host: 'alexa.jhoughton.me',
+  'x-real-ip': '72.21.217.164',
+  connection: 'close',
+  'content-length': '701',
+  'content-type': 'application/json; charset=utf-8',
+  accept: 'application/json',
+  'accept-charset': 'utf-8',
+  signature: 'Ya4vBTnrcyfDetOUJkKiRqIlxoyJw9oiXwAaGJd3kkYJ4+DaBaasPBZvg80BwV/8aZW7PSAdRvMhUX+pOEkQ0b5v3wElmmhgw/SK5N08lofqzkEJ2qIM6cQXle6MyVp/Hy3bXz2tQXCxbTawo7CIr9IRn2x7BP23SzSyFdZD5d5TfglQQqB2/V+rJbRLJRaqHHSSLSE7HjAsubIo/hmA/0kaE+TzBLJDabaVxxQP9MsAyZPDKvU+sPeZefhl9W1pg4joc1ghhyjir4YoKGh67WzpvfOOGC3cttNmTZeZeVyZPTJ9KMPT+3ioOYfVwWgIVxjFh5uQBlSLV00cHzv2fQ==',
+  signaturecertchainurl: 'https://s3.amazonaws.com/echo.api/echo-api-cert-4.pem',
+  'user-agent': 'Apache-HttpClient/UNAVAILABLE (Java/1.8.0_112)' }
+
+`
     return true;
 }
 
@@ -141,10 +154,10 @@ server.on('request', function(request, response) {
     }).on('end', function() {
         body = Buffer.concat(body).toString();
 
-        var isAlexa = checkHeaders(headers.signature);
+        var isAlexa = checkHeaders(headers);
         if(!isAlexa) {
             response.statusCode = 400;
-            response.end("This is not Alexa");
+            return response.end("This is not Alexa");
         }
 
         var output = portNumbers(body);
