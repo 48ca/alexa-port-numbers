@@ -1,10 +1,8 @@
 'use strict';
-var Alexa = require('alexa-sdk');
+// var Alexa = require('alexa-sdk');
+var alexa_verifier = require('alexa-verifier');
 var http = require('http');
 var PORT = 8080;
-
-var APP_ID = undefined; //OPTIONAL: replace with "amzn1.echo-sdk-ams.app.[your-unique-value-here]";
-var SKILL_NAME = 'Space Facts';
 
 var PROTOCOL_MAP = {
     ftp:21,
@@ -78,7 +76,7 @@ function generateErrorResponse() {
         response: {
             outputSpeech: {
                 type: "PlainText",
-                text: "Sorry, I didn't understand that request"
+                text: "Sorry, I don't know that protocol."
             },
             shouldEndSession: true
         }
@@ -123,21 +121,8 @@ function portNumbers(request_body) {
 
 }
 
-function checkHeaders(headers) {
-`
-{ host: 'alexa.jhoughton.me',
-  'x-real-ip': '72.21.217.164',
-  connection: 'close',
-  'content-length': '701',
-  'content-type': 'application/json; charset=utf-8',
-  accept: 'application/json',
-  'accept-charset': 'utf-8',
-  signature: 'Ya4vBTnrcyfDetOUJkKiRqIlxoyJw9oiXwAaGJd3kkYJ4+DaBaasPBZvg80BwV/8aZW7PSAdRvMhUX+pOEkQ0b5v3wElmmhgw/SK5N08lofqzkEJ2qIM6cQXle6MyVp/Hy3bXz2tQXCxbTawo7CIr9IRn2x7BP23SzSyFdZD5d5TfglQQqB2/V+rJbRLJRaqHHSSLSE7HjAsubIo/hmA/0kaE+TzBLJDabaVxxQP9MsAyZPDKvU+sPeZefhl9W1pg4joc1ghhyjir4YoKGh67WzpvfOOGC3cttNmTZeZeVyZPTJ9KMPT+3ioOYfVwWgIVxjFh5uQBlSLV00cHzv2fQ==',
-  signaturecertchainurl: 'https://s3.amazonaws.com/echo.api/echo-api-cert-4.pem',
-  'user-agent': 'Apache-HttpClient/UNAVAILABLE (Java/1.8.0_112)' }
-
-`
-    return true;
+function checkRequest(headers, body, callback) {
+    alexa_verifier(headers.cert_url, headers.signature, body, callback);
 }
 
 var server = http.createServer().listen(PORT);
@@ -146,33 +131,39 @@ server.on('request', function(request, response) {
     var method = request.method;
     var url = request.url;
     var headers = request.headers;
-    console.log(headers);
+    // console.log(headers);
     var userAgent = headers['user-agent'];
     var body = [];
+    console.log(Date.now() + ": Request started");
     request.on('data', function(chunk) {
         body.push(chunk);
     }).on('end', function() {
         body = Buffer.concat(body).toString();
 
-        var isAlexa = checkHeaders(headers);
-        if(!isAlexa) {
-            response.statusCode = 400;
-            return response.end("This is not Alexa");
-        }
+        checkRequest(headers, body, function(isAlexa){
 
-        var output = portNumbers(body);
+            if(!isAlexa) {
+                response.statusCode = 400;
+                console.log("Received non-Alexa request");
+                return response.end("This is not Alexa");
+            }
 
-        var date = Date.now();
-        console.log(date + ": " + output);
+            var output = portNumbers(body);
 
-        if(output === undefined) {
-            output = generateErrorResponse();
-        }
+            var date = Date.now();
+            console.log(date + ": " + output);
 
-        response.statusCode = 200;
-        response.setHeader('Content-Type', 'application/json');
-        response.write(output);
-        response.end();
+            if(output === undefined) {
+                output = generateErrorResponse();
+            }
+
+            response.statusCode = 200;
+            response.setHeader('Content-Type', 'application/json');
+            response.write(output);
+            response.end();
+
+
+        });
 
     }).on('error', function(err) {
         console.err(err.stack);
