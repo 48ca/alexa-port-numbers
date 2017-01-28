@@ -11,4 +11,4 @@ npm install
 ```shell
 nodejs app.js
 ```
-app.js reads the PORT environment variable for the PORT to listen to, but if none is specified it uses 8080.
+`app.js` reads the `PORT` environment variable for the port to listen to, but if none is specified it uses 8080.
