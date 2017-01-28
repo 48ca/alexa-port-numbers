@@ -4,6 +4,7 @@ var alexa_verifier = require('alexa-verifier');
 var http = require('http');
 var PORT = 8080;
 var definitions = require('./definitions.js');
+var meta = require('./package.json');
 
 function generateSpeechObject(protocol, res) {
     return {
@@ -15,7 +16,7 @@ function generateSpeechObject(protocol, res) {
 
 function generateErrorResponse() {
     var response = {
-        version: "1.0",
+        version: meta.version,
         response: {
             outputSpeech: {
                 type: "PlainText",
@@ -28,7 +29,7 @@ function generateErrorResponse() {
 }
 function generateAlexaResponse(protocol, res) {
     var response = {
-        version: "1.0",
+        version: meta.version,
         response: {
             outputSpeech: generateSpeechObject(protocol, res),
             card: {

@@ -49,7 +49,7 @@ var PROTOCOL_SSML = {
     dns:spellOut("DNS"),
     https:spellOut("HTTPS"),
     http:spellOut("HTTP"),
-    bootp:"<phoneme alphabet='ipa' ph='ˈbutpi'>BOOTP</phoneme>",
+    bootp:"<phoneme alphabet='ipa' ph='butˈpi'>BOOTP</phoneme>",
     tftp:spellOut("TFTP"),
     kerberos:"Kerberos",
     ftps:spellOut("FTPS"),

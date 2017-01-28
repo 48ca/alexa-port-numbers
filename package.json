@@ -1,9 +1,10 @@
 {
     "name":"alexa-port-numbers",
-    "version":"1.0.0",
+    "version":"0.0.1",
     "description":"An Alexa skill that returns port numbers for given protocols",
     "license":"MIT",
     "dependencies": {
         "alexa-verifier": "0.2.0"
-    }
+    },
+    "repository": "https://github.com/jamesthoughton/alexa-port-numbers"
 }
