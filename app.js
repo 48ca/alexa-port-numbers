@@ -97,7 +97,7 @@ server.on('request', function(request, response) {
                 if(isNotAlexa) {
                     response.statusCode = 400;
                     console.log("Received non-Alexa request");
-                    return response.end("This is not Alexa");
+                    return response.end("This service only responds to requests from Alexa units.");
                 }
 
                 var output = portNumbers(body);
