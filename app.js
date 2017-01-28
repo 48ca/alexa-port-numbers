@@ -2,7 +2,7 @@
 // var Alexa = require('alexa-sdk');
 var alexa_verifier = require('alexa-verifier');
 var http = require('http');
-var PORT = 8080;
+var PORT = process.env.PORT || 8080;
 var definitions = require('./definitions.js');
 var meta = require('./package.json');
 
