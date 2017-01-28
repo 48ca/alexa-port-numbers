@@ -1,5 +1,5 @@
 # alexa-port-numbers
-This Alexa skill looks up port numbers based on protocol (as defined in definitions.js).
+This Alexa skill looks up port numbers based on protocol (as defined in `definitions.js`).
 
 ## Installation
 Clone the repository and install the dependencies with

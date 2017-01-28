@@ -43,7 +43,7 @@ var PROTOCOL_SSML = {
     ssh:spellOut("SSH"),
     scp:spellOut("SCP"),
     sftp:spellOut("SFTP"),
-    telnet:"telnet",
+    telnet:"Telnet",
     smtp:spellOut("SMTP"),
     whois:"<phoneme alphabet='ipa' ph='huɪz'>WHOIS</phoneme>",
     dns:spellOut("DNS"),
