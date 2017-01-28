@@ -101,28 +101,29 @@ function generateAlexaResponse(protocol, res) {
 
 function getPortNumber(intent) {
     var protocol = intent.slots.Protocol.value;
-    if(protocol === undefined) return;
+    if(protocol == undefined) return;
     var num = PROTOCOL_MAP[protocol.toLowerCase()];
-    if(typeof(num) == undefined)
+    if(num == undefined)
         return;
     return generateAlexaResponse(protocol, "" + num);
 }
 
 function portNumbers(request_body) {
 
-    var req = JSON.parse(request_body)['request'];
-    var intent = req.intent;
-    switch(intent.name) {
-        case "GetPortNumberIntent":
-            return getPortNumber(intent)
-    }
-
-    return null;
+    try {
+        var req = JSON.parse(request_body)['request'];
+        var intent = req.intent;
+        switch(intent.name) {
+            case "GetPortNumberIntent":
+                return getPortNumber(intent)
+        }
+    } catch(SyntaxError) {}
+    return;
 
 }
 
 function checkRequest(headers, body, callback) {
-    alexa_verifier(headers.cert_url, headers.signature, body, callback);
+    alexa_verifier(headers.signaturecertchainurl, headers.signature, body, callback);
 }
 
 var server = http.createServer().listen(PORT);
@@ -140,28 +141,38 @@ server.on('request', function(request, response) {
     }).on('end', function() {
         body = Buffer.concat(body).toString();
 
-        checkRequest(headers, body, function(isAlexa){
+        var setStatus = false;
 
-            if(!isAlexa) {
-                response.statusCode = 400;
-                console.log("Received non-Alexa request");
-                return response.end("This is not Alexa");
+        checkRequest(headers, body, function(isNotAlexa){
+
+            try {
+
+                if(isNotAlexa) {
+                    response.statusCode = 400;
+                    console.log("Received non-Alexa request");
+                    return response.end("This is not Alexa");
+                }
+
+                var output = portNumbers(body);
+
+                var date = Date.now();
+                console.log(date + ": " + output);
+
+                if(output === undefined) {
+                    output = generateErrorResponse();
+                }
+
+                response.statusCode = 200;
+                setStatus = true;
+                response.setHeader('Content-Type', 'application/json');
+                response.write(output);
+                response.end();
+
+            } catch(Exception) {
+                if(!setStatus)
+                    response.statusCode = 500;
+                response.end("Server error");
             }
-
-            var output = portNumbers(body);
-
-            var date = Date.now();
-            console.log(date + ": " + output);
-
-            if(output === undefined) {
-                output = generateErrorResponse();
-            }
-
-            response.statusCode = 200;
-            response.setHeader('Content-Type', 'application/json');
-            response.write(output);
-            response.end();
-
 
         });
 
