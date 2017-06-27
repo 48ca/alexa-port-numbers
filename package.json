@@ -1,6 +1,6 @@
 {
     "name":"alexa-port-numbers",
-    "version":"0.0.1",
+    "version":"0.0.2",
     "description":"An Alexa skill that returns port numbers for given protocols",
     "license":"MIT",
     "dependencies": {

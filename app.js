@@ -27,6 +27,18 @@ function generateErrorResponse() {
     };
     return JSON.stringify(response);
 }
+function generateAlexaOpenResponse() {
+    var response = {
+        version: meta.version,
+        response: {
+            outputSpeech: {
+                type: "PlainText",
+                text: "Ask me for a protocol, and I'll give you the port number it uses."
+            }
+        }
+    };
+    return JSON.stringify(response);
+}
 function generateAlexaResponse(protocol, res) {
     var response = {
         version: meta.version,
@@ -45,7 +57,8 @@ function generateAlexaResponse(protocol, res) {
 
 function getPortNumber(intent) {
     var protocol = intent.slots.Protocol.value;
-    if(protocol == undefined) return;
+    if(protocol == undefined) // App has been opened
+        return generateAlexaOpenResponse();
 
     // Trim
     protocol = protocol.replace(/^\W*/,'').replace(/\W*$/,'');
